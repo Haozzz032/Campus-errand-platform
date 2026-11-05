@@ -64,24 +64,28 @@ type OrderCategories struct {
 
 // - `orders`：业务订单号、学校、类型、标题、描述、发布者、接单跑者、固定报酬、取件地点、送达地点、联系人、联系电话、发布时间、截止时间、当前状态、接单/完成/取消时间、取消原因。`runner_id` 可为空。
 type Orders struct {
-	ID            uint64
-	SchoolID      uint64
-	CategoriesID  uint64
-	Title         string
-	Discribe      string
-	UserID        uint64
-	RunnerID      *uint64
-	Remuneration  uint64
-	StartPlace    string
-	EndPlace      string
-	UserPhone     string
-	PublishedTime time.Time
-	Deadline      time.Time
-	Status        OrderStatus
-	AcceptTime    time.Time
-	FinishTime    time.Time
-	CancelTime    time.Time
-	CancelReason  string
+	ID               uint64
+	OrderNo          string
+	SchoolID         uint64
+	CategoryID       uint64
+	Title            string
+	Description      string
+	PublisherID      uint64
+	RunnerID         *uint64
+	RemunerationCent int64
+	StartPlace       string
+	EndPlace         string
+	UserPhone        string
+	PublishedTime    time.Time
+	Deadline         time.Time
+	Status           OrderStatus
+	AcceptTime       *time.Time
+	RunnerFinishedAt *time.Time
+	UserFinishTime   *time.Time
+	AutoConfirmAt    *time.Time
+	CancelbyID       uint64
+	CancelTime       *time.Time
+	CancelReason     string
 }
 
 // - `order_status_logs`：记录订单状态变更前后值、操作者类型、操作者 ID、原因和时间，供履约追踪和纠纷审计。
