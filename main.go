@@ -3,6 +3,7 @@ package main
 import (
 	"Campus-errand-platform/config"
 	"Campus-errand-platform/database"
+	"Campus-errand-platform/handler"
 	"Campus-errand-platform/middleware"
 	"Campus-errand-platform/model"
 	"log"
@@ -15,6 +16,8 @@ func main() {
 	server.GET("/")
 	cfg := config.Loadconfig()
 	db := database.InitDB(cfg)
+
+	server.POST("/api/regist", func(ctx *gin.Context) { handler.Regist(ctx, db, &cfg) })
 
 	//需要登录
 	Auth := server.Group("/", middleware.Auth(&cfg))
