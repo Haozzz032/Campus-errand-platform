@@ -18,6 +18,7 @@ func main() {
 	db := database.InitDB(cfg)
 
 	server.POST("/api/regist", func(ctx *gin.Context) { handler.Regist(ctx, db, &cfg) })
+	server.POST("/api/login", func(ctx *gin.Context) { handler.Login(ctx, db, &cfg) })
 
 	//需要登录
 	Auth := server.Group("/", middleware.Auth(&cfg))
