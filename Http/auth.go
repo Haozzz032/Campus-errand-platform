@@ -44,3 +44,10 @@ type RegistResponse struct {
 	ExpiresIn   uint64      `json:"expires_in"`
 	User        model.Users `json:"user"`
 }
+
+type LoginResponse struct {
+	AccessToken string      `json:"access_token"`
+	TokenType   string      `json:"token_type"`
+	ExpiresIn   uint64      `json:"expires_in"`
+	User        model.Users `json:"user"`
+}
