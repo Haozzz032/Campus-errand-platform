@@ -2,7 +2,7 @@ package handler
 
 import (
 	"Campus-errand-platform/config"
-	Http "Campus-errand-platform/http"
+	Http "Campus-errand-platform/Http"
 	"Campus-errand-platform/middleware"
 	"Campus-errand-platform/model"
 	"errors"
@@ -87,7 +87,7 @@ func Regist(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
 
 	tokenStr, err := middleware.SigntToken(data.ID, cfg)
 	if err != nil {
-		log.Println("[login]jwt err:", err.Error())
+		log.Println("[regist]jwt err:", err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "登录失败"})
 		return
 	}
@@ -100,4 +100,55 @@ func Regist(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
 	}
 
 	ctx.JSON(http.StatusCreated, res)
+}
+
+func Login(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
+	var req Http.LoginRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "登录请求参数错误"})
+		return
+	}
+	req.Username = strings.TrimSpace(req.Username)
+	req.Password = strings.TrimSpace(req.Password)
+
+	if req.Username == "" || req.Password == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "用户名与密码不能为空"})
+		return
+	}
+
+	var data model.Users
+	if err := db.Model(&model.Users{}).Where("username=?", req.Username).First(&data).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
+			return
+		}
+		log.Println("[login]db err:", err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "登录失败"})
+		return
+	}
+
+	if data.Status != model.UserStatusActive {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "账户已被封禁"})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(data.PasswordHash), []byte(req.Password)); err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
+		return
+	}
+
+	tokenStr, err := middleware.SigntToken(data.ID, cfg)
+	if err != nil {
+		log.Println("[login]jwt err:", err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "登录失败"})
+		return
+	}
+
+	res := Http.RegistResponse{
+		AccessToken: tokenStr,
+		TokenType:   "Bearer",
+		ExpiresIn:   604800,
+		User:        data,
+	}
+	ctx.JSON(http.StatusOK, res)
 }
