@@ -19,6 +19,15 @@ type RegistRequest struct {
 	Phone    string `json:"phone"`
 }
 
+// | 参数 | 类型 | 必填 | 说明 |
+// |---|---|---:|---|
+// | `username` | string | 是 | 用户名 |
+// | `password` | string | 是 | 明文密码，仅用于校验 |
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 // ```json
 //
 //	{
@@ -30,7 +39,7 @@ type RegistRequest struct {
 //
 // ```
 type RegistResponse struct {
-	AccessToken string      `json:"acess_token"`
+	AccessToken string      `json:"access_token"`
 	TokenType   string      `json:"token_type"`
 	ExpiresIn   uint64      `json:"expires_in"`
 	User        model.Users `json:"user"`
