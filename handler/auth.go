@@ -126,16 +126,18 @@ func Login(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "登录失败"})
 		return
 	}
-
+	
+	if err := bcrypt.CompareHashAndPassword([]byte(data.PasswordHash), []byte(req.Password)); err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
+		return
+	}
+	
 	if data.Status != model.UserStatusActive {
 		ctx.JSON(http.StatusConflict, gin.H{"error": "账户已被封禁"})
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(data.PasswordHash), []byte(req.Password)); err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
-		return
-	}
+	
 
 	tokenStr, err := middleware.SigntToken(data.ID, cfg)
 	if err != nil {
@@ -144,7 +146,7 @@ func Login(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
 		return
 	}
 
-	res := Http.RegistResponse{
+	res := Http.LoginResponse{
 		AccessToken: tokenStr,
 		TokenType:   "Bearer",
 		ExpiresIn:   604800,
