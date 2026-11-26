@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"Campus-errand-platform/config"
 	Http "Campus-errand-platform/Http"
+	"Campus-errand-platform/config"
 	"Campus-errand-platform/middleware"
 	"Campus-errand-platform/model"
 	"errors"
@@ -95,7 +95,7 @@ func Regist(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
 	res := Http.RegistResponse{
 		AccessToken: tokenStr,
 		TokenType:   "Bearer",
-		ExpiresIn:   604800,
+		ExpiresIn:   uint64(cfg.JWTTTL.Seconds()),
 		User:        data,
 	}
 
@@ -126,18 +126,16 @@ func Login(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "登录失败"})
 		return
 	}
-	
+
 	if err := bcrypt.CompareHashAndPassword([]byte(data.PasswordHash), []byte(req.Password)); err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
 		return
 	}
-	
+
 	if data.Status != model.UserStatusActive {
 		ctx.JSON(http.StatusConflict, gin.H{"error": "账户已被封禁"})
 		return
 	}
-
-	
 
 	tokenStr, err := middleware.SigntToken(data.ID, cfg)
 	if err != nil {
@@ -149,7 +147,7 @@ func Login(ctx *gin.Context, db *gorm.DB, cfg *config.Config) {
 	res := Http.LoginResponse{
 		AccessToken: tokenStr,
 		TokenType:   "Bearer",
-		ExpiresIn:   604800,
+		ExpiresIn:   uint64(cfg.JWTTTL.Seconds()),
 		User:        data,
 	}
 	ctx.JSON(http.StatusOK, res)

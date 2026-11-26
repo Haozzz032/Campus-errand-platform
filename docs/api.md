@@ -357,8 +357,9 @@ JWT 默认有效期为 7 天。封禁、停用账号不能登录，也不能调�
 | 34 | PATCH | `/api/admin/reports/{id}/review` | 审核举报并处罚用户 | 管理员 |
 | 35 | POST | `/api/admin/schools` | 新增学校 | 管理员 |
 | 36 | PUT | `/api/admin/schools/{id}` | 修改学校信息或状态 | 管理员 |
-| 37 | POST | `/api/admin/order-categories` | 新增订单分类 | 管理员 |
-| 38 | PUT | `/api/admin/order-categories/{id}` | 修改订单分类或状态 | 管理员 |
+| 37 | POST | `/api/admin/order-categories` | 新增学校订单分类 | 管理员 |
+| 38 | PUT | `/api/admin/order-categories/{id}` | 修改学校订单分类或状态 | 管理员 |
+| 39 | POST | `/api/api/user/profile/schools` | 修改自身学校 | 是 |
 ---
 
 ## 7. 详细接口说明
@@ -1060,6 +1061,22 @@ JWT 默认有效期为 7 天。封禁、停用账号不能登录，也不能调�
 | `is_active` | boolean | 否 | 是否启用 |
 
 返回 `data`：修改后的 `OrderCategory`。分类不物理删除，已有订单继续保留 `category_id`。
+
+### 39. 修改自己的学校
+
+`PUT /api/user/profile`
+
+- 功能：修改用户学校。
+- 登录：是。
+- 角色：不限。
+
+请求体：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---:|---|
+| `school_id` | integer | 否 | 已启用的学校id |
+
+返回 `data`：修改后的 `UserSelf`。
 
 ---
 
