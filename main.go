@@ -28,7 +28,7 @@ func main() {
 	//可选登录
 	OptionalAuth := server.Group("/", middleware.OptionalAuth(&cfg))
 	{
-
+		OptionalAuth.GET("/api/order-categories", func(ctx *gin.Context) { handler.GetOrdercategories(ctx, db) })
 	}
 	//需要用户身份登录
 	UserAuth := server.Group("/", middleware.RequireRole(model.RoleUser, &cfg, db))
