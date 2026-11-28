@@ -43,7 +43,8 @@ func main() {
 	//需要管理员身份登录
 	AdminAuth := server.Group("/", middleware.RequireRole(model.RoleAdmin, &cfg, db))
 	{
-
+		AdminAuth.POST("/api/admin/order-categories", func(ctx *gin.Context) { handler.AddOrderCategories(ctx, db) })
+		AdminAuth.PUT("/api/admin/order-categories/{id}", func(ctx *gin.Context) { handler.ModOrderCategories(ctx, db) })
 	}
 
 	if err := server.Run(cfg.Addr()); err != nil {
